@@ -18,6 +18,10 @@
             width: 100vw;
             height: 100vh;
         }
+        .cross {
+            stroke: white;
+            stroke-width: 2;
+        }
     </style>
 </head>
 <body>
@@ -43,22 +47,25 @@
                 tooltip.style("visibility", "hidden");
             }, 2000);
         }
-  
 
         d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTUfzabh1crdKdsnhiBExiOHwxLmAhSYq7Db4bI_lSFiW-bnxz10RcK9H_mIoDRK1y9J10JVQz7JfTi/pub?output=csv").then(function(data) {
             // Create a dot for each row in the CSV file
             data.forEach(function(row) {
-                d3.select("#image-container").append("circle")
-                    .attr("class", "dot")
-                    .attr("cx", row.cx + "%")
-                    .attr("cy", row.cy + "%")
-                    .attr("r", "10")
-                    .attr("fill", "red")
-                    .datum(row);  // Attach the row data to the dot
+                var group = d3.select("#image-container").append("g")
+                    .attr("transform", "translate(" + parseFloat(row.cx) * window.innerWidth / 100 + "," + parseFloat(row.cy) * window.innerHeight / 100 + ")")
+                    .datum(row);  // Attach the row data to the group
+
+                group.append("circle")
+                    .attr("r", "15")
+                    .attr("fill", "black");
+
+                group.append("path")
+                    .attr("class", "cross")
+                    .attr("d", "M-6,-6L6,6M6,-6L-6,6");
             })
 
             // Attach the click event handler to the dots
-            d3.selectAll(".dot").on("click", handleClick);
+            d3.selectAll("g").on("click", handleClick);
         });
     </script>
 </body>
