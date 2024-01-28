@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Tooltip</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        .tooltip {
+            position: absolute;
+            z-index: 10;
+            visibility: hidden;
+            background: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #image-container {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <svg id="image-container">
+        <image href="map.jpeg" width="100%" height="100%"></image>
+    </svg>
+
+    <script>
+        // Create a tooltip div that is hidden by default
+        var tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip");
+
+        // Function to handle click event
+        function handleClick(event, d) {
+            // Show the tooltip at the clicked location
+            tooltip.style("visibility", "visible")
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY + 10) + "px")
+                .text(d.description);  // Use the description from the CSV file
+
+            // Hide the tooltip after 2 seconds
+            setTimeout(function() {
+                tooltip.style("visibility", "hidden");
+            }, 2000);
+        }
+  
+
+        d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTUfzabh1crdKdsnhiBExiOHwxLmAhSYq7Db4bI_lSFiW-bnxz10RcK9H_mIoDRK1y9J10JVQz7JfTi/pub?output=csv").then(function(data) {
+            // Create a dot for each row in the CSV file
+            data.forEach(function(row) {
+                d3.select("#image-container").append("circle")
+                    .attr("class", "dot")
+                    .attr("cx", row.cx + "%")
+                    .attr("cy", row.cy + "%")
+                    .attr("r", "10")
+                    .attr("fill", "red")
+                    .datum(row);  // Attach the row data to the dot
+            })
+
+            // Attach the click event handler to the dots
+            d3.selectAll(".dot").on("click", handleClick);
+        });
+    </script>
+</body>
+</html>
